@@ -1,0 +1,5 @@
+# CivicMind backend dependencies (tested with the versions in brackets)
+fastapi>=0.110,<1.0          # [0.135]
+uvicorn[standard]>=0.27      # [0.42]
+requests>=2.31,<3            # [2.32]  Sarvam AI calls
+Pillow>=10.3                 # [12.1]  image validation / EXIF stripping
