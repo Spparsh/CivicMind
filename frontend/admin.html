@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin · CivicMind</title>
+<link rel="icon" href="assets/favicon.svg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<header class="nav" id="nav"></header>
+
+<main class="wrap page">
+  <div class="row spread wrap-row">
+    <div>
+      <div class="eyebrow">Administration</div>
+      <h1 style="margin-bottom:2px">Platform oversight</h1>
+      <p class="muted small" style="margin:0">Users, complaints, resolutions, infrastructure data and configuration.</p>
+    </div>
+  </div>
+  <div class="notice warn" id="demoBanner" hidden>Demo database — all civic records are fictional and marked synthetic.</div>
+
+  <div class="grid g4" style="margin-top:22px">
+    <div class="card metric orange"><div class="k">Users</div><div class="v" id="aUsers">—</div></div>
+    <div class="card metric blue"><div class="k">Complaints</div><div class="v" id="aComplaints">—</div><div class="sub" id="aOpen">&nbsp;</div></div>
+    <div class="card metric purple"><div class="k">Incidents</div><div class="v" id="aIncidents">—</div><div class="sub" id="aResolutions">&nbsp;</div></div>
+    <div class="card metric green"><div class="k">Assets</div><div class="v" id="aAssets">—</div><div class="sub" id="aFindings">&nbsp;</div></div>
+  </div>
+
+  <div class="detail-grid" style="margin-top:18px">
+    <section class="card flush">
+      <div class="card-h pad"><h3>Users &amp; roles</h3></div>
+      <div class="table-wrap">
+        <table class="table" id="usersTable">
+          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Department</th><th>Active</th><th></th></tr></thead>
+          <tbody><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+    <aside>
+      <section class="card" style="margin-bottom:18px">
+        <div class="card-h"><h3>Add a user</h3></div>
+        <form id="addUser" novalidate>
+          <div class="field"><label class="f" for="uName">Name</label><input id="uName" required maxlength="80"/></div>
+          <div class="field"><label class="f" for="uEmail">Email</label><input type="email" id="uEmail" required maxlength="254" autocomplete="off"/></div>
+          <div class="grid g2" style="gap:10px">
+            <div class="field"><label class="f" for="uPass">Initial password</label><input type="password" id="uPass" required minlength="8" autocomplete="new-password"/></div>
+            <div class="field"><label class="f" for="uRole">Role</label><select id="uRole"><option value="officer">Officer</option><option value="admin">Admin</option><option value="citizen">Citizen</option></select></div>
+          </div>
+          <div class="grid g2" style="gap:10px">
+            <div class="field"><label class="f" for="uDept">Department</label><select id="uDept"><option value="">—</option></select></div>
+            <div class="field"><label class="f" for="uWard">Ward</label><select id="uWard"><option value="">—</option></select></div>
+          </div>
+          <div class="form-error" id="uError" role="alert" hidden></div>
+          <button class="btn primary block" type="submit" id="uBtn">Create user</button>
+          <p class="hint">Share the initial password privately; the user can change it after signing in.</p>
+        </form>
+      </section>
+      <section class="card">
+        <div class="card-h"><h3>Configuration</h3><span class="badge">Read-only</span></div>
+        <p class="tiny muted" id="cfgNote"></p>
+        <div class="eyebrow">Complaint categories</div><div class="pill-list" id="cfgCats" style="margin:8px 0 16px"></div>
+        <div class="eyebrow">Departments</div><div class="pill-list" id="cfgDepts" style="margin-top:8px"></div>
+      </section>
+    </aside>
+  </div>
+
+  <div class="detail-grid" style="margin-top:18px">
+    <section class="card flush"><div class="card-h pad"><h3>Departments</h3></div>
+      <div class="table-wrap"><table class="table" id="deptTable"><thead><tr><th>Department</th><th>Officers</th><th>Status</th><th></th></tr></thead>
+        <tbody><tr class="static"><td colspan="4" class="empty">Loading…</td></tr></tbody></table></div>
+      <form class="row wrap-row pad" id="deptForm" style="gap:8px">
+        <label class="sr-only" for="deptName">New department</label>
+        <input id="deptName" maxlength="120" placeholder="New department name" style="flex:1;min-width:200px"/>
+        <button class="btn sm" type="submit">Add department</button></form>
+      <p class="tiny muted pad" style="margin:0">Departments used for complaint routing come from <code>data/civicmind_config.json</code> and cannot be deactivated here.</p>
+    </section>
+    <section class="card"><div class="card-h"><h3>Contractors</h3></div>
+      <div id="conList" class="list"><p class="small muted">Loading…</p></div>
+      <details style="margin-top:10px"><summary class="small"><strong>Register a contractor</strong></summary>
+        <form id="conForm" novalidate style="margin-top:8px">
+          <div class="grid g2" style="gap:8px">
+            <div class="field"><label class="f" for="conCode">Code</label><input id="conCode" maxlength="32" placeholder="CON-012"/></div>
+            <div class="field"><label class="f" for="conName">Name</label><input id="conName" maxlength="120"/></div>
+            <div class="field"><label class="f" for="conDept">Department</label><input id="conDept" maxlength="120"/></div>
+            <div class="field"><label class="f" for="conPerson">Contact person / role</label><input id="conPerson" maxlength="120"/></div>
+            <div class="field"><label class="f" for="conPhone">Verified phone</label><input id="conPhone" maxlength="40"/></div>
+            <div class="field"><label class="f" for="conAddr">Office address</label><input id="conAddr" maxlength="300"/></div>
+          </div>
+          <label class="row small" style="gap:8px"><input type="checkbox" id="conSynthetic" style="width:auto"/> Fictional demo record</label>
+          <button class="btn sm primary" type="submit" style="margin-top:8px">Register (as unverified)</button></form></details>
+    </section>
+  </div>
+
+  <div class="section-title"><h2>Utility network data</h2><span class="grow"></span>
+    <a class="btn sm" href="data-sources.html">Discover public data sources →</a></div>
+  <div class="grid g4" id="utilStats"><div class="card empty">Loading…</div></div>
+
+  <section class="card" id="utilImport" style="margin-top:18px">
+    <div class="card-h"><h3>Import utility records</h3><span class="badge">Preview → confirm</span></div>
+    <p class="small muted">GeoJSON FeatureCollection (EPSG:4326, Point / LineString, optional top-level <code>connections</code> list) or CSV
+      (points: <code>asset_id, utility_type, asset_type, name, lat, lng</code>; or connections: <code>from_asset_id, to_asset_id, connection_type, direction</code>).
+      Nothing is saved until you confirm. Existing IDs are never overwritten, and imported records start as <strong>unverified</strong>.</p>
+    <form id="uiForm" novalidate>
+      <div class="grid g3" style="gap:10px">
+        <div class="field"><label class="f" for="uiFile">File (max 6 MB)</label><input type="file" id="uiFile" accept=".geojson,.json,.csv,application/json,text/csv"/></div>
+        <div class="field"><label class="f" for="uiFormat">Format</label><select id="uiFormat"><option value="geojson">GeoJSON</option><option value="csv">CSV</option></select></div>
+        <div class="field"><label class="f" for="uiSnapshot">Reviewed source snapshot (optional)</label><input id="uiSnapshot" inputmode="numeric" placeholder="ID from Data sources"/></div>
+      </div>
+      <div class="grid g3" style="gap:10px" id="uiManualSource">
+        <div class="field"><label class="f" for="uiName">Source name</label><input id="uiName" maxlength="160" placeholder="e.g. Ward 12 water GIS export, Mar 2026"/></div>
+        <div class="field"><label class="f" for="uiAuthority">Authority (optional)</label><input id="uiAuthority" maxlength="160"/></div>
+        <div class="field"><label class="f" for="uiProv">Provenance</label><select id="uiProv">
+          <option value="official_unverified">Official source — not field verified</option><option value="planned_design">Planned / design</option>
+          <option value="approximate_unverified" selected>Approximate / unverified</option><option value="verified_as_built">Verified as-built</option>
+          <option value="synthetic_demo">Synthetic demo (fictional)</option></select></div>
+      </div>
+      <div class="field"><label class="f" for="uiLicense">Licence / usage notes (optional)</label><input id="uiLicense" maxlength="500"/></div>
+      <div class="form-error" id="uiError" role="alert" hidden></div>
+      <button class="btn primary" type="submit" id="uiPreviewBtn">Validate and preview</button>
+    </form>
+    <div id="uiResult" aria-live="polite"></div>
+  </section>
+
+  <div class="detail-grid" style="margin-top:18px">
+    <section class="card flush"><div class="card-h pad"><h3>Import history</h3></div>
+      <div class="table-wrap"><table class="table" id="uiJobs"><thead><tr><th>Job</th><th>Source</th><th>Result</th><th>Status</th><th>When</th></tr></thead>
+        <tbody><tr class="static"><td colspan="5" class="empty">Loading…</td></tr></tbody></table></div></section>
+    <section class="card"><div class="card-h"><h3>Utility findings</h3><button class="btn sm" id="ufScan">Re-run rules</button></div>
+      <div id="ufList" class="list"><p class="small muted">Loading…</p></div></section>
+  </div>
+
+  <section class="card" style="margin-top:18px" id="regMgmt">
+    <div class="card-h"><h3>Registry records</h3><span class="badge">Every change is logged</span></div>
+    <div class="grid g3" style="gap:14px">
+      <form id="regConn" novalidate><h4 style="margin:0 0 8px">Record a connection</h4>
+        <div class="field"><label class="f" for="rcFrom">From asset ID</label><input id="rcFrom" maxlength="64"/></div>
+        <div class="field"><label class="f" for="rcTo">To asset ID</label><input id="rcTo" maxlength="64"/></div>
+        <div class="field"><label class="f" for="rcDir">Direction</label><select id="rcDir"><option value="unknown">Unknown</option><option value="downstream">Flows from → to</option><option value="bidirectional">Bidirectional</option></select></div>
+        <div class="field"><label class="f" for="rcNote">Source / basis</label><input id="rcNote" maxlength="200" placeholder="e.g. As-built sheet 12, 1994"/></div>
+        <button class="btn sm" type="submit">Add (unverified)</button></form>
+      <form id="regVerify" novalidate><h4 style="margin:0 0 8px">Verification decision</h4>
+        <div class="field"><label class="f" for="rvKind">Record type</label><select id="rvKind"><option value="asset">Asset</option><option value="connection">Connection</option><option value="contact">Contact</option></select></div>
+        <div class="field"><label class="f" for="rvId">Record ID</label><input id="rvId" maxlength="64" placeholder="e.g. V-DEMO-03"/></div>
+        <div class="field"><label class="f" for="rvStatus">Decision</label><select id="rvStatus"><option value="verified">Verified</option><option value="unverified">Unverified</option><option value="disputed">Disputed</option></select></div>
+        <div class="field"><label class="f" for="rvNote">Evidence / note</label><input id="rvNote" maxlength="300" placeholder="e.g. Operator site visit 10 Oct"/></div>
+        <button class="btn sm" type="submit">Record decision</button></form>
+      <form id="regContact" novalidate><h4 style="margin:0 0 8px">Add operator contact</h4>
+        <div class="field"><label class="f" for="ctOrg">Organisation</label><input id="ctOrg" maxlength="120"/></div>
+        <div class="field"><label class="f" for="ctRole">Role</label><input id="ctRole" maxlength="120"/></div>
+        <div class="field"><label class="f" for="ctPhone">Phone or e-mail</label><input id="ctPhone" maxlength="120"/></div>
+        <div class="field"><label class="f" for="ctUtil">Network</label><select id="ctUtil"><option value="water">Water</option><option value="sewer">Sewer</option><option value="storm">Storm</option><option value="electric">Electricity</option><option value="gas">Gas</option><option value="telecom">Telecom</option></select></div>
+        <div class="field"><label class="f" for="ctSource">Source</label><input id="ctSource" maxlength="200" placeholder="e.g. Department letter ref."/></div>
+        <button class="btn sm" type="submit">Add (unverified)</button></form>
+    </div>
+    <p class="tiny muted">New connections and contacts are stored as unverified. Only a recorded verification decision makes a contact operationally usable.</p>
+  </section>
+
+  <section class="card" style="margin-top:18px" id="analytics"><div class="card-h"><h3>Citywide analytics</h3><span class="badge">From current records</span></div>
+    <div class="grid g3" id="anaBody"><p class="small muted">Loading…</p></div></section>
+
+  <div class="section-title"><h2>Legacy point-asset registry</h2></div>
+  <section class="card">
+    <div class="grid g2">
+      <form id="importForm" novalidate>
+        <h3>Import point assets (GeoJSON)</h3>
+        <p class="small muted">For the original streetlight / road / drain point registry used for complaint matching. Unlike the utility
+          import above, this saves immediately (no preview). A FeatureCollection of <strong>Point</strong> features with properties
+          <code>asset_code</code>, <code>asset_type</code> (streetlight, road_segment, drain, water_main, waste_point, traffic_signal),
+          optional <code>name</code>, <code>criticality</code>, <code>inspection_interval_days</code>, <code>last_inspected_at</code>.
+          Existing asset codes are never overwritten.</p>
+        <div class="field"><label class="f" for="gFile">GeoJSON file (max 2 MB)</label><input type="file" id="gFile" accept=".geojson,.json,application/geo+json,application/json"/></div>
+        <div class="field"><label class="f" for="gSource">Data source</label><input id="gSource" maxlength="120" placeholder="e.g. PMC streetlight register, Jan 2026"/></div>
+        <label class="row small" style="gap:8px"><input type="checkbox" id="gSynthetic" style="width:auto"/> This is synthetic / test data</label>
+        <div class="form-error" id="gError" role="alert" hidden></div>
+        <button class="btn primary" type="submit" id="gBtn" style="margin-top:10px">Import</button>
+      </form>
+      <div id="importResult" aria-live="polite"><p class="small muted">The import summary will appear here.</p></div>
+    </div>
+  </section>
+
+  <div class="section-title"><h2>Citizen complaints</h2><span class="badge" id="acCount">0</span></div>
+  <section class="card flush">
+    <div class="table-wrap tall">
+      <table class="table" id="acTable">
+        <thead><tr><th>Complaint</th><th>Citizen</th><th>Category</th><th>Ward</th><th>Photo</th><th>Photo check</th><th>Status</th><th>When</th></tr></thead>
+        <tbody><tr><td colspan="8" class="empty">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="section-title"><h2>Resolutions</h2><span class="badge" id="arCount">0</span></div>
+  <section class="card flush">
+    <div class="table-wrap tall">
+      <table class="table" id="arTable">
+        <thead><tr><th>Reference</th><th>Officer</th><th>Check</th><th>Reports → new since</th><th>Proof photo</th><th>Outcome</th><th>When</th></tr></thead>
+        <tbody><tr><td colspan="7" class="empty">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="section-title"><h2>Audit log</h2><span class="badge" id="alCount">0</span></div>
+  <section class="card flush">
+    <div class="table-wrap tall">
+      <table class="table" id="alTable">
+        <thead><tr><th>When</th><th>Who</th><th>Action</th><th>Detail</th></tr></thead>
+        <tbody><tr><td colspan="4" class="empty">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card danger-zone" id="resetZone" hidden style="margin-top:26px">
+    <h3>Reset demo data</h3>
+    <p class="small">Deletes all complaints, incidents, plans and findings in the <strong>demo database</strong>. Users and the asset registry are kept. This is refused on non-demo databases.</p>
+    <div class="row wrap-row">
+      <label class="sr-only" for="resetConfirm">Type RESET to confirm</label>
+      <input id="resetConfirm" placeholder="Type RESET" style="max-width:200px" autocomplete="off"/>
+      <button class="btn red" id="resetBtn">Reset demo data</button>
+    </div>
+  </section>
+</main>
+
+<script src="js/api.js"></script>
+<script src="js/common.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

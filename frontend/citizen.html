@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Report &amp; track · CivicMind</title>
+<link rel="icon" href="assets/favicon.svg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<header class="nav" id="nav"></header>
+
+<main class="wrap page">
+  <div class="row spread wrap-row">
+    <div>
+      <div class="eyebrow">Citizen</div>
+      <h1 style="margin-bottom:2px"><span data-i18n="hello">Hello</span>, <span id="userName">there</span></h1>
+      <p class="muted small" style="margin:0" data-i18n="intro">Report a civic problem and follow it until it's resolved.</p>
+    </div>
+    <div class="row wrap-row">
+      <label class="lang-switch small"><span data-i18n="language">Language</span>
+        <select id="lang" class="sm-select" aria-label="Language"></select></label>
+      <span class="live-dot" id="liveDot">Connecting…</span>
+    </div>
+  </div>
+
+  <div class="grid g4" style="margin-top:22px">
+    <div class="card metric orange"><div class="k" data-i18n="m_mine">My reports</div><div class="v" id="mMine">—</div></div>
+    <div class="card metric blue"><div class="k" data-i18n="m_progress">Being handled</div><div class="v" id="mProgress">—</div></div>
+    <div class="card metric green"><div class="k" data-i18n="m_resolved">Resolved</div><div class="v" id="mResolved">—</div></div>
+    <div class="card metric purple"><div class="k" data-i18n="m_joined">Incidents I'm part of</div><div class="v" id="mJoined">—</div></div>
+  </div>
+
+  <div class="detail-grid" style="margin-top:22px">
+    <section class="card" aria-labelledby="reportTitle">
+      <div class="card-h"><h3 id="reportTitle" data-i18n="report_title">Report a civic issue</h3></div>
+      <form id="reportForm" novalidate>
+        <div class="field">
+          <label class="f" for="category" data-i18n="category">Category</label>
+          <select id="category" required><option value="" data-i18n="choose_category">Choose a category…</option></select>
+        </div>
+        <div class="field">
+          <label class="f" for="description" data-i18n="problem">What is the problem?</label>
+          <textarea id="description" required minlength="10" maxlength="2000"
+            placeholder="e.g. The streetlight outside the school gate has been off for three nights."></textarea>
+          <div class="row spread wrap-row">
+            <div class="hint"><span id="descCount">0</span>/2000 · <span data-i18n="desc_hint">at least 10 characters</span></div>
+            <button type="button" class="btn sm" id="assistBtn" data-i18n="check">Check my report (optional)</button>
+          </div>
+          <div class="hint" data-i18n="check_hint">Suggests a category and, if available, an English translation. Nothing is submitted until you press Submit.</div>
+          <div class="voice-box" id="voiceBox">
+            <div class="row wrap-row" style="gap:8px">
+              <button type="button" class="btn sm" id="recBtn" aria-describedby="recWhy">🎤 <span data-i18n="rec_start">Record voice (max 15 s)</span></button>
+              <button type="button" class="btn sm" id="recStop" hidden>■ <span data-i18n="rec_stop">Stop</span></button>
+              <span class="rec-dot" id="recDot" hidden aria-live="polite"><span class="pulse"></span> <span id="recTime">0.0</span> s / 15 s</span>
+              <label class="small row" style="gap:6px"><span data-i18n="rec_lang">Language spoken</span>
+                <select id="recLang" class="sm-select"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option></select></label>
+            </div>
+            <p class="tiny muted" id="recWhy" style="margin:6px 0 0" data-i18n="rec_why">Your browser will ask for microphone access only when you press Record. You can type instead.</p>
+            <div id="recReview" hidden>
+              <audio id="recAudio" controls preload="metadata"></audio>
+              <div class="row wrap-row" style="gap:6px">
+                <button type="button" class="btn sm ghost" id="recDiscard" data-i18n="rec_discard">Discard and re-record</button>
+                <span class="tiny muted" id="recStatus"></span>
+              </div>
+              <div id="transcriptBox" hidden>
+                <label class="f" for="transcript" data-i18n="rec_transcript">Transcript (AI-generated — check and edit)</label>
+                <textarea id="transcript" maxlength="2000" rows="3"></textarea>
+                <button type="button" class="btn sm" id="useTranscript" data-i18n="rec_use">Use as my description</button>
+              </div>
+              <p class="tiny muted" id="recDisclosure"></p>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <span class="f"><span data-i18n="media_label">Photos or videos</span> <span class="muted" id="photoReq" data-i18n="media_req">(1 to 3 required)</span></span>
+          <p class="tiny muted" style="margin:0 0 6px" data-i18n="media_why">Add 1 to 3 photos or short videos so the team can see the problem before visiting.</p>
+          <div class="row wrap-row media-actions">
+            <label class="btn sm" for="mediaCamera" id="mediaCameraBtn"><span data-i18n="media_take_photo">📷 Take photo</span></label>
+            <label class="btn sm" for="mediaVideo" id="mediaVideoBtn"><span data-i18n="media_record_video">🎬 Record video</span></label>
+            <label class="btn sm ghost" for="mediaPick" id="mediaPickBtn"><span data-i18n="media_choose">🖼 Choose files</span></label>
+            <span class="badge" id="mediaCount" aria-live="polite">0 / 3</span>
+          </div>
+          <input type="file" id="mediaCamera" class="sr-only" accept="image/*" capture="environment"/>
+          <input type="file" id="mediaVideo" class="sr-only" accept="video/*" capture="environment"/>
+          <input type="file" id="mediaPick" class="sr-only" multiple
+                 accept="image/jpeg,image/png,image/webp,image/heic,video/mp4,video/quicktime,video/webm,video/3gpp"/>
+          <div class="media-grid" id="mediaGrid"></div>
+          <div class="hint" id="mediaHint"></div>
+        </div>
+        <div id="assistPanel" class="assist-panel" hidden aria-live="polite"></div>
+        <div class="field">
+          <label class="f" for="address" data-i18n="address">Landmark / address (optional)</label>
+          <input id="address" maxlength="300" placeholder="e.g. Near the bus stop, Lane 3"/>
+        </div>
+        <div class="field">
+          <span class="f" data-i18n="location">Location</span>
+          <div class="addr-search">
+            <input id="addrQuery" type="search" maxlength="120" autocomplete="off" enterkeyhint="search"
+                   aria-label="Search an address or landmark" data-i18n-ph="addr_search_ph"
+                   placeholder="Search an address or landmark (e.g. FC Road)"/>
+            <button type="button" class="btn sm" id="addrBtn" data-i18n="addr_search">🔍 Search</button>
+            <button type="button" class="btn sm" id="geoBtn" data-i18n="use_location">📍 Use my current location</button>
+          </div>
+          <div class="addr-results" id="addrResults" hidden></div>
+          <div id="pickmap" class="pick-map" role="application" aria-label="Map: tap to set the issue location"></div>
+          <div class="row spread wrap-row" style="margin-top:8px">
+            <span class="hint" id="locText" data-i18n="loc_hint">Tap the map or drag the pin to the exact spot.</span>
+          </div>
+          <div class="tiny muted" id="geoInfo" aria-live="polite"></div>
+        </div>
+        <div class="form-error" id="formError" role="alert" hidden></div>
+        <button class="btn primary block" id="submitBtn" type="submit" data-i18n="review_btn">Review report</button>
+      </form>
+      <div class="review-panel card" id="reviewPanel" hidden role="dialog" aria-labelledby="reviewTitle">
+        <h3 id="reviewTitle" data-i18n="review_title">Check before you send</h3>
+        <div id="reviewBody"></div>
+        <div class="row wrap-row" style="margin-top:12px">
+          <button type="button" class="btn ghost" id="reviewEdit" data-i18n="review_edit">Edit</button>
+          <button type="button" class="btn primary" id="reviewSend" data-i18n="submit">Submit report</button>
+        </div>
+      </div>
+      <div id="result" aria-live="polite"></div>
+    </section>
+
+    <aside>
+      <section class="card chat-card" style="margin-bottom:18px" aria-labelledby="chatTitle">
+        <div class="card-h"><h3 id="chatTitle" data-i18n="chat_title">Ask CivicMind</h3><span class="badge" id="chatEngine" data-i18n="chat_badge">Help</span></div>
+        <div class="chat-log" id="chatLog" aria-live="polite"></div>
+        <div class="pill-list" id="chatSuggest" style="margin:8px 0"></div>
+        <form class="row" id="chatForm" style="gap:6px">
+          <label class="sr-only" for="chatInput">Message</label>
+          <input id="chatInput" maxlength="500" autocomplete="off" style="flex:1"/>
+          <button class="btn sm primary" type="submit" data-i18n="chat_send">Send</button>
+        </form>
+        <p class="tiny muted" style="margin:6px 0 0" data-i18n="chat_note">Answers come from CivicMind's help content and your own reports only. It cannot submit for you.</p>
+      </section>
+      <section class="card" style="margin-bottom:18px">
+        <div class="card-h"><h3 data-i18n="updates">Updates</h3></div>
+        <div class="list" id="liveFeed"><div class="empty small">Loading…</div></div>
+      </section>
+      <section class="card">
+        <div class="card-h"><h3 data-i18n="track">Track with a code</h3></div>
+        <p class="small muted">Use the private tracking code you received after reporting. It shows status only — share it only with people you trust.</p>
+        <form class="row" id="trackForm">
+          <label class="sr-only" for="trackId">Tracking code</label>
+          <input id="trackId" placeholder="e.g. 7KQ4X9MPRA" maxlength="16" style="flex:1" autocomplete="off"/>
+          <button class="btn sm" type="submit">Track</button>
+        </form>
+        <div id="trackResult" style="margin-top:12px" aria-live="polite"></div>
+      </section>
+    </aside>
+  </div>
+
+  <div class="section-title"><h2 data-i18n="my_reports">My reports</h2><span class="badge" id="mineCount">0</span></div>
+  <div class="grid" id="myComplaints"><div class="card empty">Loading…</div></div>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/api.js"></script>
+<script src="js/common.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/voice-recorder.js"></script>
+<script src="js/citizen.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>City map · CivicMind</title>
+<link rel="icon" href="assets/favicon.svg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<header class="nav" id="nav"></header>
+
+<div class="map-shell">
+  <section class="map-overlay" aria-label="Map filters">
+    <div class="row spread" style="margin-bottom:10px">
+      <strong id="mapTitle">City map</strong>
+      <button class="btn sm ghost" id="panelToggle" aria-expanded="true" aria-controls="panelBody">Hide</button>
+    </div>
+    <div id="panelBody">
+      <p class="tiny muted" id="scopeNote"></p>
+      <div class="field" style="margin-bottom:10px">
+        <label class="f" for="fCategory">Category</label>
+        <select id="fCategory"><option value="">All categories</option></select>
+      </div>
+      <div class="field" style="margin-bottom:10px">
+        <label class="f" for="fStatus">Report status</label>
+        <select id="fStatus"><option value="">Any</option><option value="open">Open (not resolved)</option>
+          <option value="submitted">Submitted</option><option value="clustered">Grouped</option>
+          <option value="in_progress">In progress</option><option value="resolved">Resolved</option></select>
+      </div>
+      <fieldset class="layers">
+        <legend class="f">Layers</legend>
+        <label><input type="checkbox" id="layComplaints" checked/> Reports <strong id="cCount">0</strong></label>
+        <label><input type="checkbox" id="layIncidents" checked/> Incidents <strong id="iCount">0</strong></label>
+        <label class="staff-only"><input type="checkbox" id="layAssets" checked/> Infrastructure assets <strong id="aCount">0</strong></label>
+        <label class="staff-only"><input type="checkbox" id="layFindings" checked/> Risk findings <strong id="fCount">0</strong></label>
+        <label class="staff-only"><input type="checkbox" id="layPriority"/> Only High/Critical incidents</label>
+      </fieldset>
+      <fieldset class="layers staff-only">
+        <legend class="f">Utility networks <strong id="utilCount">0</strong></legend>
+        <div id="utilTypes"><span class="tiny muted">Loading…</span></div>
+        <label class="f" for="utilVerif" style="margin-top:8px">Record status</label>
+        <select id="utilVerif" class="sm-select"><option value="">Verified and unverified</option>
+          <option value="verified">Verified only</option><option value="unverified">Unverified only</option></select>
+        <p class="tiny muted" style="margin:6px 0 0">Click a pipe, cable or device to see its recorded connections.</p>
+      </fieldset>
+      <div class="row spread" style="margin-top:10px">
+        <span class="tiny muted" id="updated">Loading…</span>
+        <button class="btn sm" id="refreshBtn">↻ Refresh</button>
+      </div>
+      <div class="notice warn tiny" id="tileWarn" hidden>Map tiles failed to load — markers are still shown.</div>
+    </div>
+  </section>
+
+  <section class="map-legend" id="mapLegend" aria-label="Legend">
+    <button type="button" class="legend-toggle" id="legendToggle" aria-expanded="false" aria-controls="legendBody">
+      <span>🗺️ Legend</span><span class="legend-caret" aria-hidden="true">▴</span></button>
+    <div id="legendBody" hidden>
+    <div class="legend-title">Reports (by severity)</div>
+    <div class="lrow"><span class="swatch round" style="background:#2E9E5B"></span>1–2 low</div>
+    <div class="lrow"><span class="swatch round" style="background:#E0A106"></span>3 moderate</div>
+    <div class="lrow"><span class="swatch round" style="background:#D9342B"></span>4–5 high</div>
+    <div class="legend-title">Incidents (by priority)</div>
+    <div class="lrow"><span class="swatch pill" style="background:#D9342B">⚠ n</span>count of reports</div>
+    <div class="staff-only">
+      <div class="legend-title">Infrastructure</div>
+      <div class="lrow"><span class="swatch diamond" style="background:#2F6FDB"></span>asset</div>
+      <div class="lrow"><span class="swatch diamond" style="background:#7B4FD1"></span>critical asset</div>
+      <div class="lrow"><span class="swatch flag">🚩</span>risk finding</div>
+      <div class="legend-title">Utility networks</div>
+      <div id="utilLegend"></div>
+    </div>
+    </div>
+  </section>
+
+  <aside class="util-panel card" id="utilPanel" hidden aria-label="Utility asset details" aria-live="polite"></aside>
+  <div id="map" role="application" aria-label="City map"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/api.js"></script>
+<script src="js/common.js"></script>
+<script src="js/utility-network.js"></script>
+<script src="js/map.js"></script>
+</body>
+</html>

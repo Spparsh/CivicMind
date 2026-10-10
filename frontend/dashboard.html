@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Operations · CivicMind</title>
+<link rel="icon" href="assets/favicon.svg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+</head>
+<body>
+<header class="nav" id="nav"></header>
+
+<main class="wrap page">
+  <div class="row spread wrap-row">
+    <div>
+      <div class="eyebrow" id="cityEyebrow">Operations</div>
+      <h1 style="margin-bottom:2px">Operations workspace</h1>
+      <p class="muted small" style="margin:0">Incidents ranked by an explainable score, infrastructure risks and incoming reports.</p>
+    </div>
+    <div class="row wrap-row">
+      <button class="btn" id="detectBtn" title="Group unlinked nearby related reports into incidents">🧩 Run grouping</button>
+      <button class="btn" id="scanBtn" title="Re-evaluate the infrastructure risk rules">🚩 Scan risks</button>
+      <a class="btn" href="map.html">🗺️ Map</a>
+    </div>
+  </div>
+  <div class="notice warn" id="demoBanner" hidden>Demo database — all records are fictional and marked <strong>Synthetic</strong>.</div>
+
+  <div class="grid g4" style="margin-top:22px" id="metrics">
+    <div class="card metric red"><div class="k">Open complaints</div><div class="v" id="kOpen">—</div><div class="sub" id="kOpenSub">&nbsp;</div></div>
+    <div class="card metric blue"><div class="k">Open incidents</div><div class="v" id="kInc">—</div><div class="sub" id="kIncSub">&nbsp;</div></div>
+    <div class="card metric orange"><div class="k">Plans awaiting approval</div><div class="v" id="kPending">—</div><div class="sub" id="kProgressSub">&nbsp;</div></div>
+    <div class="card metric purple"><div class="k">Open risk findings</div><div class="v" id="kFindings">—</div><div class="sub">Infrastructure rules</div></div>
+    <div class="card metric green"><div class="k">Resolved complaints</div><div class="v" id="kResolved">—</div><div class="sub" id="kRate">&nbsp;</div></div>
+    <div class="card metric green"><div class="k">Median time to resolve</div><div class="v" id="kMedian">—</div><div class="sub">Submission → resolution</div></div>
+    <div class="card metric red"><div class="k">Overdue work orders</div><div class="v" id="kOverdue">—</div><div class="sub" id="kOpenWo">&nbsp;</div></div>
+    <div class="card metric blue"><div class="k">Work awaiting verification</div><div class="v" id="kAwaiting">—</div><div class="sub">Completion photos to review</div></div>
+  </div>
+
+  <div class="detail-grid" style="margin-top:18px">
+    <div class="ops-main">
+    <section class="card flush" aria-labelledby="queueTitle">
+      <div class="card-h pad">
+        <h3 id="queueTitle">Priority queue</h3>
+        <div class="row wrap-row">
+          <label class="sr-only" for="qFilter">Priority</label>
+          <select id="qFilter" class="sm-select"><option value="">All priorities</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select>
+          <label class="sr-only" for="qSearch">Search</label>
+          <input id="qSearch" class="sm-select" placeholder="Search…" maxlength="60"/>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="table" id="queueTable">
+          <thead><tr><th>Incident</th><th>Why it ranks here</th><th class="num">Reports</th><th>Priority</th><th>Status</th></tr></thead>
+          <tbody><tr><td colspan="5" class="empty">Loading…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="tiny muted pad">Score = severity (35) + reports (20) + time unresolved (15) + category safety weight (15) + critical asset (15). Prototype policy, not an official standard.</p>
+    </section>
+
+    <section class="card flush ops-map-card" aria-labelledby="opsMapTitle">
+      <div class="card-h pad">
+        <h3 id="opsMapTitle">Live operations map</h3>
+        <div class="row wrap-row ops-map-keys">
+          <label class="tiny"><input type="checkbox" data-ops-ut="water" checked/> <span class="swatch" style="background:#1F6FE5"></span>Water</label>
+          <label class="tiny"><input type="checkbox" data-ops-ut="sewer"/> <span class="swatch" style="background:#7A4FB5"></span>Sewer</label>
+          <label class="tiny"><input type="checkbox" data-ops-ut="electric"/> <span class="swatch" style="background:#D08A00"></span>Power</label>
+          <a class="small link" href="map.html">Full map →</a>
+        </div>
+      </div>
+      <div id="opsMap" class="ops-map" role="application" aria-label="Map of open incidents over the utility network"></div>
+      <p class="tiny muted pad" id="opsMapNote">Open incidents (numbered by report count) and open reports over the recorded utility network. Click an incident to open it.</p>
+    </section>
+
+    <div class="grid g2 ops-left-grid">
+      <section class="card" aria-labelledby="woTitle">
+        <div class="card-h"><h3 id="woTitle">🛠️ Open work orders</h3><span class="badge" id="woCount">0</span></div>
+        <div class="list" id="woList"><div class="empty small">Loading…</div></div>
+      </section>
+      <div class="card"><div class="card-h"><h3>Complaints by category</h3></div><div class="chart-box"><canvas id="cCat" aria-label="Complaints by category"></canvas></div></div>
+      <div class="card"><div class="card-h"><h3>Submitted vs resolved</h3><span class="tiny muted">last 7 days (UTC)</span></div><div class="chart-box"><canvas id="cTrend" aria-label="Trend"></canvas></div></div>
+      <div class="card"><div class="card-h"><h3>Open incidents by priority</h3></div><div class="chart-box"><canvas id="cPrio" aria-label="Priority"></canvas></div></div>
+    </div>
+
+    </div>
+
+    <aside class="ops-side">
+      <section class="card" style="margin-bottom:18px">
+        <div class="card-h"><h3>🚩 Infrastructure risk findings</h3><a class="small link" href="assets.html">All →</a></div>
+        <div class="list" id="findings"><div class="empty small">Loading…</div></div>
+      </section>
+      <section class="card" style="margin-bottom:18px">
+        <div class="card-h"><h3>Utility network findings</h3><a class="small link" href="map.html">Utility map →</a></div>
+        <div class="list" id="utilFindings"><div class="empty small">Loading…</div></div>
+      </section>
+      <section class="card">
+        <div class="card-h"><h3>Recent activity</h3></div>
+        <div class="timeline activity-scroll" id="activity"></div>
+      </section>
+    </aside>
+  </div>
+
+  <div class="grid g2" style="margin-top:18px">
+    <section class="card" aria-labelledby="netTitle">
+      <div class="card-h"><h3 id="netTitle">Utility network records</h3><a class="small link" href="map.html">Map →</a></div>
+      <div id="netSummary" class="net-summary"><div class="empty small">Loading…</div></div>
+    </section>
+    <div class="card"><div class="card-h"><h3>Complaints by ward</h3><span class="tiny muted">nearest ward centre · top 10</span></div><div class="chart-box"><canvas id="cWard" aria-label="Wards"></canvas></div></div>
+  </div>
+
+  <div class="section-title"><h2>Latest citizen reports</h2><span class="badge" id="repCount">0</span></div>
+  <section class="card flush">
+    <div class="table-wrap tall">
+      <table class="table" id="reportsTable">
+        <thead><tr><th>Complaint</th><th>Category</th><th>Ward</th><th>Citizen</th><th class="num">Severity</th><th>Photo</th><th>Status</th><th>When</th><th>Action</th></tr></thead>
+        <tbody><tr><td colspan="9" class="empty">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<div id="resolveModal"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/api.js"></script>
+<script src="js/common.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

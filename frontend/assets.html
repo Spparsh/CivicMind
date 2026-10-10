@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Infrastructure · CivicMind</title>
+<link rel="icon" href="assets/favicon.svg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<header class="nav" id="nav"></header>
+
+<main class="wrap page">
+  <div class="row spread wrap-row">
+    <div>
+      <div class="eyebrow">Infrastructure intelligence</div>
+      <h1 style="margin-bottom:2px">Assets &amp; risk findings</h1>
+      <p class="muted small" style="margin:0">Complaints linked to the assets they concern, maintenance history, and rule-based findings with their evidence.</p>
+    </div>
+    <button class="btn primary" id="scanBtn">🚩 Re-run risk rules</button>
+  </div>
+
+  <section class="card flush" style="margin-top:22px">
+    <div class="card-h pad">
+      <h3>Risk findings</h3>
+      <div class="row wrap-row">
+        <label class="sr-only" for="fStatus">Status</label>
+        <select id="fStatus" class="sm-select">
+          <option value="active">Open &amp; acknowledged</option><option value="dismissed">Dismissed</option>
+          <option value="cleared">Cleared (condition no longer holds)</option><option value="all">All</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Severity</th><th>Rule</th><th>Finding</th><th>Subject</th><th>Status</th><th>Review</th></tr></thead>
+        <tbody id="findingsBody"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+      </table>
+    </div>
+    <details class="pad rules-help"><summary class="small">How the rules work</summary>
+      <ul class="small">
+        <li><strong>A · Repeated asset complaints</strong> — at least N open reports matched to one asset within W days.</li>
+        <li><strong>B · Repeat after maintenance</strong> — a report matched to an asset within L days after a recorded repair/replacement/cleaning. A possible recurrence, not proof the work failed.</li>
+        <li><strong>C · Critical infrastructure incident</strong> — an open incident of sufficient severity linked to an asset marked critical.</li>
+        <li><strong>D · Geographic concentration</strong> — several open incidents of related categories close together. They are not merged automatically.</li>
+        <li><strong>E · Overdue inspection</strong> — last inspection older than the asset's interval. Only evaluated when both values exist.</li>
+        <li><strong>F · Conflicting open actions</strong> — open plans on different incidents targeting the same asset.</li>
+      </ul>
+      <p class="tiny muted">Thresholds are in data/civicmind_config.json → risk_rules.</p>
+    </details>
+  </section>
+
+  <div class="detail-grid" style="margin-top:18px">
+    <section class="card flush">
+      <div class="card-h pad">
+        <h3>Asset registry</h3>
+        <label class="sr-only" for="fType">Type</label>
+        <select id="fType" class="sm-select"><option value="">All types</option></select>
+      </div>
+      <div class="table-wrap tall">
+        <table class="table" id="assetTable">
+          <thead><tr><th>Asset</th><th>Type</th><th>Criticality</th><th class="num">Open reports</th><th class="num">Findings</th><th>Inspection</th></tr></thead>
+          <tbody><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+    <aside id="detail"><section class="card"><div class="empty small">Select an asset to see its history.</div></section></aside>
+  </div>
+</main>
+
+<script src="js/api.js"></script>
+<script src="js/common.js"></script>
+<script src="js/assets.js"></script>
+</body>
+</html>

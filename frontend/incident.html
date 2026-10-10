@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Incident · CivicMind</title>
+<link rel="icon" href="assets/favicon.svg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<header class="nav" id="nav"></header>
+
+<main class="wrap page">
+  <a class="small link" id="backLink" href="dashboard.html">← Back</a>
+  <div id="loading" class="card" style="margin-top:10px"><div class="skeleton" style="height:26px;width:40%"></div><div class="skeleton" style="height:14px;width:70%;margin-top:12px"></div></div>
+  <div id="content" hidden></div>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/api.js"></script>
+<script src="js/common.js"></script>
+<script src="js/incident.js"></script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Data sources · CivicMind</title>
+<link rel="icon" href="assets/favicon.svg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<header class="nav" id="nav"></header>
+
+<main class="wrap page">
+  <div class="row spread wrap-row">
+    <div>
+      <div class="eyebrow">Administration</div>
+      <h1 style="margin-bottom:2px">Public data sources</h1>
+      <p class="muted small" style="margin:0">Find official public sources with TinyFish, fetch the pages you choose, review what was extracted, then use reviewed sources in the utility import preview.</p>
+    </div>
+    <span class="badge" id="modeBadge">Checking…</span>
+  </div>
+
+  <div class="notice warn">Everything found or fetched here is <strong>untrusted candidate content</strong>. It does not prove asset locations, network connections, flow direction or that a phone number is current. Nothing here creates infrastructure records — imports still need a validated preview and your confirmation.</div>
+  <div class="notice warn" id="notConfigured" hidden></div>
+
+  <div class="grid g4" style="margin-top:12px">
+    <div class="card metric blue"><div class="k">Searches today</div><div class="v" id="uSearch">—</div><div class="sub tiny muted">TinyFish Search</div></div>
+    <div class="card metric purple"><div class="k">Pages fetched today</div><div class="v" id="uFetch">—</div><div class="sub tiny muted" id="uFetchCap">&nbsp;</div></div>
+    <div class="card metric orange"><div class="k">Agent runs today</div><div class="v" id="uAgent">—</div><div class="sub tiny muted" id="uAgentCap">&nbsp;</div></div>
+    <div class="card metric green"><div class="k">Utility import</div><div id="uImport" style="margin:6px 0 2px">—</div><div class="sub tiny muted">Preview + confirm step</div></div>
+  </div>
+
+  <div class="detail-grid" style="margin-top:18px">
+    <section class="card" aria-labelledby="discTitle">
+      <div class="card-h"><h3 id="discTitle">1 · Discover candidate sources</h3><span class="badge">TinyFish Search</span></div>
+      <form id="discoverForm" novalidate>
+        <div class="grid g2" style="gap:10px">
+          <div class="field"><label class="f" for="dAuthority">Authority</label>
+            <input id="dAuthority" required maxlength="120" placeholder="e.g. Pune Municipal Corporation"/></div>
+          <div class="field"><label class="f" for="dRegion">Area (optional)</label>
+            <input id="dRegion" maxlength="120" placeholder="e.g. Pune"/></div>
+        </div>
+        <div class="field"><label class="f" for="dTopic">Topic</label>
+          <input id="dTopic" required maxlength="160" placeholder="e.g. water supply network map"/></div>
+        <fieldset class="field" style="border:0;padding:0;margin:0 0 15px">
+          <legend class="f">Kinds of source (optional)</legend>
+          <div class="pill-list" id="dTypes"></div>
+        </fieldset>
+        <div class="field"><label class="f" for="dDomains">Only these domains (optional)</label>
+          <input id="dDomains" maxlength="400" placeholder="e.g. pmc.gov.in, data.opencity.in"/>
+          <div class="hint">Comma-separated. Leave empty to search the whole web.</div></div>
+        <div class="form-error" id="dError" role="alert" hidden></div>
+        <button class="btn primary" type="submit" id="dBtn">Search for sources</button>
+      </form>
+    </section>
+    <aside>
+      <section class="card">
+        <div class="card-h"><h3>How this works</h3></div>
+        <ol class="small" style="padding-left:18px;margin:0">
+          <li>Search returns <strong>candidates</strong> — links, titles and snippets.</li>
+          <li>Select up to <span id="maxUrls">10</span> and fetch them. TinyFish extracts the page text.</li>
+          <li>Read the extracted text and approve or reject it as a source.</li>
+          <li>Approved sources provide <em>provenance</em> for the utility import preview, where records are validated and you confirm the import.</li>
+        </ol>
+        <div class="divider"></div>
+        <p class="tiny muted" style="margin:0">Only public pages are fetched. Local, private-network and non-web addresses are refused before any request is made. The API key stays on the server.</p>
+      </section>
+    </aside>
+  </div>
+
+  <div class="section-title"><h2>2 · Candidates</h2><span class="badge" id="cCount">0</span>
+    <span class="grow"></span>
+    <button class="btn sm primary" id="fetchBtn" disabled>Fetch selected (0)</button></div>
+  <section class="card flush">
+    <div class="table-wrap">
+      <table class="table" id="cTable">
+        <thead><tr><th style="width:36px"><span class="sr-only">Select</span></th><th>Candidate</th><th>Site</th><th>Date</th><th>Status</th><th></th></tr></thead>
+        <tbody><tr class="static"><td colspan="6" class="empty">No candidates yet. Run a search above.</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+  <div class="row wrap-row" style="margin-top:10px">
+    <label class="f" for="manualUrl" style="margin:0">Or fetch a specific public URL</label>
+    <input id="manualUrl" maxlength="2048" placeholder="https://…" style="flex:1;min-width:240px"/>
+    <button class="btn sm" id="manualBtn">Fetch URL</button>
+  </div>
+  <div id="fetchResult" aria-live="polite"></div>
+
+  <div class="section-title"><h2>3 · Fetched content for review</h2><span class="badge" id="sCount">0</span>
+    <span class="grow"></span>
+    <label class="sr-only" for="sFilter">Filter</label>
+    <select id="sFilter" class="sm-select"><option value="">All</option><option value="pending_review" selected>Pending review</option><option value="reviewed">Reviewed</option><option value="rejected">Rejected</option></select></div>
+  <section class="card flush">
+    <div class="table-wrap">
+      <table class="table" id="sTable">
+        <thead><tr><th>Page</th><th>Method</th><th>Result</th><th>Review</th><th>Fetched</th><th></th></tr></thead>
+        <tbody><tr class="static"><td colspan="6" class="empty">Nothing fetched yet.</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+  <section class="card" id="reviewPanel" hidden style="margin-top:18px"></section>
+
+  <div class="section-title"><h2>Optional · Agent extraction</h2><span class="badge" id="agentBadge">Disabled</span></div>
+  <section class="card">
+    <p class="small muted" id="agentInfo">For public pages that only render with JavaScript. Read-only, limited to domains of selected candidates, capped per day, and metered by TinyFish.</p>
+    <form id="agentForm" novalidate hidden>
+      <div class="grid g2" style="gap:10px">
+        <div class="field"><label class="f" for="aUrl">Public page URL</label><input id="aUrl" maxlength="2048" placeholder="https://…"/></div>
+        <div class="field"><label class="f" for="aExtract">What to read</label><input id="aExtract" maxlength="300" placeholder="e.g. List the ward office names and phone numbers in the table"/></div>
+      </div>
+      <div class="form-error" id="aError" role="alert" hidden></div>
+      <button class="btn" type="submit" id="aBtn">Run read-only extraction</button>
+    </form>
+  </section>
+</main>
+
+<script src="js/api.js"></script>
+<script src="js/common.js"></script>
+<script src="js/data-sources.js"></script>
+</body>
+</html>

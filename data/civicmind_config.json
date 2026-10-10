@@ -1,0 +1,308 @@
+{
+  "city_name": "Pune",
+  "city_center": {
+    "lat": 18.5204,
+    "lng": 73.8567
+  },
+  "service_radius_km": 60,
+  "categories": [
+    "Water Leakage",
+    "Low Water Pressure",
+    "Garbage Accumulation",
+    "Pothole",
+    "Road Damage",
+    "Streetlight Failure",
+    "Drainage Issue",
+    "Fallen Tree",
+    "Traffic Signal Failure",
+    "Air/Noise Pollution",
+    "Sewage Overflow",
+    "Encroachment",
+    "Other"
+  ],
+  "departments": {
+    "Water Leakage": "Water Supply Department",
+    "Low Water Pressure": "Water Supply Department",
+    "Garbage Accumulation": "Sanitation Department",
+    "Pothole": "Public Works (Roads)",
+    "Road Damage": "Public Works (Roads)",
+    "Streetlight Failure": "Electrical Department",
+    "Traffic Signal Failure": "Traffic & Signals Cell",
+    "Drainage Issue": "Drainage Department",
+    "Sewage Overflow": "Drainage Department",
+    "Fallen Tree": "Garden & Tree Authority",
+    "Air/Noise Pollution": "Environment Department",
+    "Encroachment": "Anti-Encroachment Cell",
+    "Other": "General Grievance Cell"
+  },
+  "wards": [
+    {
+      "ward": "Shivajinagar",
+      "lat": 18.5308,
+      "lng": 73.8478,
+      "zone": "Central"
+    },
+    {
+      "ward": "Deccan",
+      "lat": 18.514,
+      "lng": 73.8415,
+      "zone": "Central"
+    },
+    {
+      "ward": "Camp",
+      "lat": 18.5122,
+      "lng": 73.8785,
+      "zone": "Central"
+    },
+    {
+      "ward": "Kothrud",
+      "lat": 18.5074,
+      "lng": 73.8077,
+      "zone": "West"
+    },
+    {
+      "ward": "Warje",
+      "lat": 18.4855,
+      "lng": 73.8009,
+      "zone": "West"
+    },
+    {
+      "ward": "Baner",
+      "lat": 18.559,
+      "lng": 73.7868,
+      "zone": "West"
+    },
+    {
+      "ward": "Aundh",
+      "lat": 18.559,
+      "lng": 73.8077,
+      "zone": "West"
+    },
+    {
+      "ward": "Wakad",
+      "lat": 18.5975,
+      "lng": 73.7625,
+      "zone": "West"
+    },
+    {
+      "ward": "Hinjewadi",
+      "lat": 18.5913,
+      "lng": 73.7389,
+      "zone": "West"
+    },
+    {
+      "ward": "Kharadi",
+      "lat": 18.5515,
+      "lng": 73.9436,
+      "zone": "East"
+    },
+    {
+      "ward": "Viman Nagar",
+      "lat": 18.5679,
+      "lng": 73.9143,
+      "zone": "East"
+    },
+    {
+      "ward": "Hadapsar",
+      "lat": 18.5089,
+      "lng": 73.926,
+      "zone": "East"
+    },
+    {
+      "ward": "Magarpatta",
+      "lat": 18.5158,
+      "lng": 73.928,
+      "zone": "East"
+    },
+    {
+      "ward": "Yerawada",
+      "lat": 18.5515,
+      "lng": 73.8837,
+      "zone": "East"
+    },
+    {
+      "ward": "Katraj",
+      "lat": 18.4529,
+      "lng": 73.8576,
+      "zone": "South"
+    },
+    {
+      "ward": "Kondhwa",
+      "lat": 18.4634,
+      "lng": 73.8895,
+      "zone": "South"
+    },
+    {
+      "ward": "Sinhagad Road",
+      "lat": 18.4724,
+      "lng": 73.8251,
+      "zone": "South"
+    },
+    {
+      "ward": "Pimpri",
+      "lat": 18.6298,
+      "lng": 73.7997,
+      "zone": "North"
+    },
+    {
+      "ward": "Chinchwad",
+      "lat": 18.6279,
+      "lng": 73.8009,
+      "zone": "North"
+    },
+    {
+      "ward": "Nigdi",
+      "lat": 18.6512,
+      "lng": 73.7619,
+      "zone": "North"
+    }
+  ],
+  "demo_accounts": [
+    {
+      "role": "citizen",
+      "name": "Asha Kulkarni (demo citizen)",
+      "email": "citizen@civicmind.in"
+    },
+    {
+      "role": "citizen",
+      "name": "Rohan Deshpande (demo citizen)",
+      "email": "citizen2@civicmind.in"
+    },
+    {
+      "role": "citizen",
+      "name": "Meera Joshi (demo citizen)",
+      "email": "citizen3@civicmind.in"
+    },
+    {
+      "role": "officer",
+      "name": "Demo Officer",
+      "email": "officer@civicmind.in",
+      "department": "Electrical Department"
+    },
+    {
+      "role": "admin",
+      "name": "Demo Admin",
+      "email": "admin@civicmind.in"
+    }
+  ],
+  "priority_thresholds": {
+    "critical": 80,
+    "high": 60,
+    "medium": 40
+  },
+  "cluster": {
+    "radius_km": 1.5,
+    "window_hours": 48,
+    "min_size": 3
+  },
+  "require_issue_photo": true,
+  "category_groups": [
+    [
+      "Water Leakage",
+      "Low Water Pressure"
+    ],
+    [
+      "Drainage Issue",
+      "Sewage Overflow"
+    ],
+    [
+      "Pothole",
+      "Road Damage"
+    ]
+  ],
+  "asset_types": {
+    "streetlight": {
+      "label": "Streetlight",
+      "department": "Electrical Department",
+      "prefix": "SL"
+    },
+    "road_segment": {
+      "label": "Road segment",
+      "department": "Public Works (Roads)",
+      "prefix": "RD"
+    },
+    "drain": {
+      "label": "Drainage point",
+      "department": "Drainage Department",
+      "prefix": "DR"
+    },
+    "water_main": {
+      "label": "Water main / valve",
+      "department": "Water Supply Department",
+      "prefix": "WM"
+    },
+    "waste_point": {
+      "label": "Waste collection point",
+      "department": "Sanitation Department",
+      "prefix": "WP"
+    },
+    "traffic_signal": {
+      "label": "Traffic signal",
+      "department": "Traffic & Signals Cell",
+      "prefix": "TS"
+    }
+  },
+  "category_asset_types": {
+    "Streetlight Failure": [
+      "streetlight"
+    ],
+    "Pothole": [
+      "road_segment"
+    ],
+    "Road Damage": [
+      "road_segment"
+    ],
+    "Drainage Issue": [
+      "drain"
+    ],
+    "Sewage Overflow": [
+      "drain"
+    ],
+    "Water Leakage": [
+      "water_main"
+    ],
+    "Low Water Pressure": [
+      "water_main"
+    ],
+    "Garbage Accumulation": [
+      "waste_point"
+    ],
+    "Traffic Signal Failure": [
+      "traffic_signal"
+    ]
+  },
+  "asset_match": {
+    "radius_m": 150
+  },
+  "risk_rules": {
+    "repeated_asset_complaints": {
+      "enabled": true,
+      "min_open_complaints": 3,
+      "window_days": 30
+    },
+    "repeat_after_maintenance": {
+      "enabled": true,
+      "lookback_days": 90,
+      "event_types": [
+        "repair",
+        "replacement",
+        "cleaning"
+      ]
+    },
+    "critical_asset_incident": {
+      "enabled": true,
+      "min_severity": 3
+    },
+    "geographic_concentration": {
+      "enabled": true,
+      "radius_km": 2.0,
+      "min_incidents": 3
+    },
+    "overdue_inspection": {
+      "enabled": true
+    },
+    "conflicting_open_actions": {
+      "enabled": true
+    }
+  }
+}
