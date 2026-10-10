@@ -2,9 +2,12 @@
 name = "civicmind"
 version = "3.0.0"
 requires-python = ">=3.12"
-dynamic = ["dependencies"]
+dependencies = [
+    "fastapi",
+    "uvicorn",
+]
 
-[tool.setuptools.dynamic]
+
 dependencies = { file = ["requirements.txt"] }
 
 [build-system]
