@@ -1,1 +1,0 @@
-# CivicMind routes package
