@@ -4,18 +4,8 @@ version = "3.0.0"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi",
-    "uvicorn",
+    "uvicorn"
 ]
-
-
-dependencies = { file = ["requirements.txt"] }
-
-[build-system]
-requires = ["setuptools>=68"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools]
-packages = []
 
 [tool.vercel]
 entrypoint = "backend.main:app"
